@@ -7,9 +7,18 @@ listed by the Master Server
 
 Doesn't manage filter !
 
+--------------------------------
+This tools is used for lan, when the LAN tab doesn't works, this will works always !
+--------------------------------
+
 Requirements:
 Sockets extension
 PHP 5.3 (5.2)
+
+--------------------------------
+iptables script
+--------------------------------
+iptables -t nat -A PREROUTING -p tcp -d hl2master.steampowered.com --dport 27011 -j DNAT --to-destination yourip:port
 
 
 Links:
