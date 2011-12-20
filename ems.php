@@ -16,9 +16,9 @@ define('BOT_PORT', '55555');
 define('PACKET_BASE', "\xFF\xFF\xFF\xFF\x66\x0A");
 
 $listIp = array(
-                    "127.0.0.1:27015",
-                    "127.0.0.1:27016",
-                );
+    "127.0.0.1:27015",
+    "127.0.0.1:27016",
+);
 
 
 echo "
@@ -70,7 +70,7 @@ echo "\tOpening UDP sockets (" . BOT_IP . ":" . BOT_PORT . ") : ";
 try {
     $socket = new Socket(BOT_IP, BOT_PORT);
 } catch (Exception $ex) {
-    echo RED."KO".NORMAL."\r\n";
+    echo RED . "KO" . NORMAL . "\r\n";
     echo "\tAn exception has been throwed: " . $ex->getMessage() . "\r\n";
     die();
 }
@@ -88,58 +88,51 @@ if (!$socket) {
     while (true) {
         $line = $socket->recvfrom($addr);
         if ($line) {
-            if (substr($line, 0, 5) == "\xFF\xFF\xFF\xFFI") {
-                Core::instance()->addServer($addr);
-            } else {
-                $m = chr(getByte($line));
-                if ($m == 1) {
-                    $regCode = getByte($line);
-                    $ip = getString($line);
-                    $filter = getString($line);
-                    echo date('Y-m-d H:i:s'). " - packet form $addr - $ip\r\n";
+            $m = chr(getByte($line));
+            if ($m == 1) {
+                $regCode = getByte($line);
+                $ip = getString($line);
+                $filter = getString($line);
+                echo date('Y-m-d H:i:s') . " - packet form $addr - $ip\r\n";
 
-                    if ($ip == "0.0.0.0:0") {
-                        $index = 0;
+                if ($ip == "0.0.0.0:0") {
+                    $index = 0;
+                } else {
+                    $index = array_search($ip, $listIp);
+                    if ($index === false) {
+                        $index = -1;
                     } else {
-                        $index = array_search($ip, $listIp);
-                        if ($index === false) {
+                        if (count($listIp) > $index + 1)
+                            $index++;
+                        else
                             $index = -1;
-                        } else {
-                            if (count($listIp) > $index + 1)
-                                $index++;
-                            else
-                                $index = -1;
-                        }
                     }
-
-                    if ($index == -1) {
-                        $ipS = "0.0.0.0:0";
-                    } else {
-                        $ipS = $listIp[$index];
-                    }
-
-                    preg_match("/^(\d+).(\d+).(\d+).(\d+):(\d+)$/", $ipS, $m5);
-
-                    $ip = array($m5[1], $m5[2], $m5[3], $m5[4]);
-                    $port = $m5[5];
-
-                    $packet = PACKET_BASE;
-
-                    foreach ($ip as $i) {
-                        $packet .= chr($i);
-                    }
-
-                    $packet.=pack("n", $port);
-                    $addrs = explode(":", $addr);
-                    $socket->sendto($packet, $addrs[0], $addrs[1]);
                 }
+
+                if ($index == -1) {
+                    $ipS = "0.0.0.0:0";
+                } else {
+                    $ipS = $listIp[$index];
+                }
+
+                preg_match("/^(\d+).(\d+).(\d+).(\d+):(\d+)$/", $ipS, $m5);
+
+                $ip = array($m5[1], $m5[2], $m5[3], $m5[4]);
+                $port = $m5[5];
+
+                $packet = PACKET_BASE;
+
+                foreach ($ip as $i) {
+                    $packet .= chr($i);
+                }
+
+                $packet.=pack("n", $port);
+                $addrs = explode(":", $addr);
+                $socket->sendto($packet, $addrs[0], $addrs[1]);
             }
         }
-
         unset($line);
-
     }
-
 }
 ?>
 
