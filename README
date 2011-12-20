@@ -1,0 +1,15 @@
+eMasterServer
+--------------------------------
+Master Server Steam based in PHP
+--------------------------------
+You need to fill the array listIp with all of you address that you want to be
+listed by the Master Server
+
+Requirements:
+Sockets extension
+PHP 5.3 (5.2)
+
+
+Links:
+http://esport-tools.net
+https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol
